@@ -23,7 +23,7 @@ object LoadCassandra {
     val sc = new SparkContext(conf)
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     val data = sc.textFile("hdfs://cassandra1:9000/cassandra/dataextracted/part-0000*").map(_.split(","))
-    data.saveAsCassandraTable("testdb","dayslice_user")
+    data.saveToCassandra("testdb","dayslice_user")
     //val testData = sc.wholeTextFiles(inputDir).map(_.split(","))
     //val data = testData.map(p => Trend(p(0).trim.toLong, Timestamp.valueOf((p(1))), p(2).trim.toLong, p(3).trim.toLong, p(4).trim.toDouble, p(5).trim.toDouble, p(6)))
     //data.saveToCassandra("spark_aggr", "material_trend", columns = SomeColumns("domain_id", "t", "mid", "kid", "cs", "q", "ty"))
