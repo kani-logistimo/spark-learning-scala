@@ -29,7 +29,7 @@ object InventoryModelLoader {
 
 
     val finalOutput = lines.map(
-      line => map(line,aggr_type)).sortByKey().reduceByKey{
+      line => map(line,aggr_type)).reduceByKey{
       case(x, y) => reduce(x, y)
     }
     finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
