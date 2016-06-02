@@ -7,11 +7,10 @@ import com.datastax.spark.connector._
  * Created by mohansrinivas on 5/31/16.
  */
 object InventoryModelLoader {
-  //case class dayslice_material(did:String,mid:String,date:String,tc:BigInt,sq:BigInt)
   def main (args : Array[String]): Unit = {
-    if(args.length != 5){
+    if(args.length != 6){
       System.out.println("Invalid Input Parameters")
-      System.out.println("Usage InventoryModelLoader masterip  cassandrahost cassandra_keyspace cassandra_table inputfile ")
+      System.out.println("Usage InventoryModelLoader masterip  cassandrahost cassandr_-keyspace cassandra_table inputfile ")
       System.exit(1)
     }
     val master = args(0)
@@ -19,6 +18,8 @@ object InventoryModelLoader {
     val inputFile = args(4)
     val casssandraKeySpace = args(2)
     val cassandraTable = args(3)
+    val aggr_type = args(5)
+
 
 
     val conf = new SparkConf().setAppName("CassandraLoader").setMaster(master).set("spark.cassandra.connection.host", cassandraHost).set("spark.eventLog.enabled", "true")
@@ -26,19 +27,26 @@ object InventoryModelLoader {
 
     val lines = sc.textFile(inputFile)
 
+
     val finalOutput = lines.map(
-      line => map(line)).reduceByKey{
+      line => map(line,aggr_type)).reduceByKey{
       case(x, y) => reduce(x, y)
     }
-
-    //finalOutput.values.saveAsTextFile("/tmp/sparkjobfile1")
+    //finalOutput.values.saveAsTextFile("/tmp/sparkjobfile134")
     //val data = finalOutput.values.map(p => dayslice_material(p.dids,p.mids,p.tss,p.stks.toLong,p.cnts.toLong))
     finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
   }
 
-  def map(line: String):(String, InventoryModel) ={
+  def map(line: String,ty :String):(String, InventoryModel) ={
     val lineArray = line.split(",")
-    (lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 0))
+    ty match {
+      case "M" => {
+        (lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 0))
+      }
+      case "K" => { (lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 0))}
+      case "U" => { (lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 0))}
+
+    }
   }
 
   def reduce(x: InventoryModel,y:InventoryModel):InventoryModel= {
@@ -46,7 +54,6 @@ object InventoryModelLoader {
     x.tc = (x.tc.toInt + 1)
     x
   }
-
 
 
 }
