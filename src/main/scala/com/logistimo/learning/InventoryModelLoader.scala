@@ -30,7 +30,7 @@ object InventoryModelLoader {
       case(x, y) => reduce(x, y)
     }
     //finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
-    finalOutput.saveAsTextFile("hdfs://cassandra1:9000/cassandra/dataextracted")
+    finalOutput.values.saveAsTextFile("hdfs://cassandra1:9000/cassandra/dataextracted")
   }
 
   def map(line: String):(String, InventoryModel) ={
