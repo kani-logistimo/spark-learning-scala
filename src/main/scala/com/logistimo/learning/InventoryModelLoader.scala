@@ -17,9 +17,7 @@ object InventoryModelLoader {
     val cassandraHost = args(1)
     val inputFile = args(4)
     val casssandraKeySpace = args(2)
-    val cassandraTable = args(3)
-
-
+    val cassandraTable = args(3);
 
     val conf = new SparkConf().setAppName("CassandraLoader").setMaster(master).set("spark.cassandra.connection.host", cassandraHost).set("spark.eventLog.enabled", "true")
     val sc = new SparkContext(conf)
@@ -31,7 +29,8 @@ object InventoryModelLoader {
       line => map(line)).reduceByKey{
       case(x, y) => reduce(x, y)
     }
-    finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
+    //finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
+    finalOutput.saveAsTextFile("hdfs://cassandra1:9000/cassandra/dataextracted")
   }
 
   def map(line: String):(String, InventoryModel) ={
