@@ -29,11 +29,9 @@ object InventoryModelLoader {
 
 
     val finalOutput = lines.map(
-      line => map(line,aggr_type)).reduceByKey{
+      line => map(line,aggr_type)).sortByKey().reduceByKey{
       case(x, y) => reduce(x, y)
     }
-    //finalOutput.values.saveAsTextFile("/tmp/sparkjobfile134")
-    //val data = finalOutput.values.map(p => dayslice_material(p.dids,p.mids,p.tss,p.stks.toLong,p.cnts.toLong))
     finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
   }
 
