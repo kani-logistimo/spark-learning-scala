@@ -8,7 +8,7 @@ import com.datastax.spark.connector._
  */
 object InventoryModelLoader {
   def main (args : Array[String]): Unit = {
-    if(args.length != 6){
+    if(args.length != 5){
       System.out.println("Invalid Input Parameters")
       System.out.println("Usage InventoryModelLoader masterip  cassandrahost cassandr_-keyspace cassandra_table inputfile ")
       System.exit(1)
@@ -18,7 +18,6 @@ object InventoryModelLoader {
     val inputFile = args(4)
     val casssandraKeySpace = args(2)
     val cassandraTable = args(3)
-    val aggr_type = args(5)
 
 
 
@@ -29,22 +28,22 @@ object InventoryModelLoader {
 
 
     val finalOutput = lines.map(
-      line => map(line,aggr_type)).reduceByKey{
+      line => map(line)).reduceByKey{
       case(x, y) => reduce(x, y)
     }
     finalOutput.values.saveToCassandra(casssandraKeySpace,cassandraTable)
   }
 
-  def map(line: String,ty :String):(String, InventoryModel) ={
+  def map(line: String):(String, InventoryModel) ={
     val lineArray = line.split(",")
-    ty match {
-      case "M" => {
-        (lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 0))
-      }
+    /*ty match {
+      case "M" => {*/
+        (lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 0))
+     /* }
       case "K" => { (lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 0))}
-      case "U" => { (lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 0))}
+      case "U" => { (lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 0))}*/
 
-    }
+   // }
   }
 
   def reduce(x: InventoryModel,y:InventoryModel):InventoryModel= {
