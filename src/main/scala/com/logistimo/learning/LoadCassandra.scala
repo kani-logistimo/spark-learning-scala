@@ -12,11 +12,8 @@ import com.datastax.spark.connector._
  */
 object LoadCassandra {
 
-
+  case class dayslice_user(did:String,id:String,date:String,sq:BigDecimal,tc:Long)
   def main(args: Array[String]): Unit = {
-
-    case class dayslice_user(did:String,id:String,date:String,sq:BigDecimal,tc:Long)
-
     val master = "spark://52.207.246.150:7077"
     val cassandra_host = "52.207.246.150"
 
@@ -27,6 +24,7 @@ object LoadCassandra {
     //val testData = sc.wholeTextFiles(inputDir).map(_.split(","))
     val dataa = data.map(p=>dayslice_user(p(0),p(1),p(2),p(3).toLong,p(4).toLong))
     dataa.saveToCassandra("testdb","dayslice_user")
+
     //val data = testData.map(p => Trend(p(0).trim.toLong, Timestamp.valueOf((p(1))), p(2).trim.toLong, p(3).trim.toLong, p(4).trim.toDouble, p(5).trim.toDouble, p(6)))
     //data.saveToCassandra("spark_aggr", "material_trend", columns = SomeColumns("domain_id", "t", "mid", "kid", "cs", "q", "ty"))
   }
