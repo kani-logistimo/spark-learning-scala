@@ -18,7 +18,9 @@ object InventoryModelLoader {
     val outputDir = args(2)
 
 
-    val conf = new SparkConf().setAppName("HDFS Loader").setMaster(master).set("spark.eventLog.enabled", "true")
+    val conf = new SparkConf().setAppName("HDFS Loader")
+      .setMaster(master).set("spark.eventLog.enabled", "true")
+      .set("spark.executor.memory","10g")
     val sc = new SparkContext(conf)
     val lines = sc.textFile(inputFile)
     val finalOutput = lines.map(

@@ -21,7 +21,12 @@ object LoadCassandra {
     val cassandraTable = args(3)
     val inputFile = args(4)
 
-    val conf = new SparkConf().setAppName("CassandraLoader").setMaster(master).set("spark.cassandra.connection.host", cassandraHost).set("spark.eventLog.enabled", "true")
+    val conf = new SparkConf().setAppName("CassandraLoader")
+      .setMaster(master)
+      .set("spark.cassandra.connection.host", cassandraHost)
+      .set("spark.cassandra.output.consistency.level","ANY")
+      .set("spark.cassandra.output.concurrent.writes","1")
+      .set("spark.eventLog.enabled", "true")
     val sc = new SparkContext(conf)
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     val data = sc.textFile(inputFile).map(_.split(","))
