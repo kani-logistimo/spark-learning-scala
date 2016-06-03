@@ -12,7 +12,7 @@ import com.datastax.spark.connector._
  */
 object LoadCassandra {
 
-  case class dayslice_user(did:String,id:String,date:String,sq:BigDecimal,tc:Long)
+  case class dayslice_user(did:String,uid:String,date:String,sq:BigDecimal,tc:Long)
   def main(args: Array[String]): Unit = {
 
     val master = args(0)
