@@ -24,6 +24,7 @@ object LoadCassandra {
     val conf = new SparkConf().setAppName("CassandraLoader")
       .setMaster(master)
       .set("spark.cassandra.connection.host", cassandraHost)
+      .set("spark.executor.memory","10g")
       .set("spark.cassandra.output.consistency.level","ANY")
       .set("spark.cassandra.output.concurrent.writes","1")
       .set("spark.eventLog.enabled", "true")
