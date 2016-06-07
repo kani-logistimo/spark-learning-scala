@@ -1,12 +1,24 @@
 package com.logistimo.learning
 
+import org.apache.hadoop.io.NullWritable
 import org.apache.spark.{SparkContext, SparkConf}
-import com.datastax.spark.connector._
+import org.apache.hadoop.mapred.lib.MultipleTextOutputFormat
 
 /**
  * Created by mohansrinivas on 5/31/16.
  */
+
+class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
+  override def generateActualKey(key: Any, value: Any): Any =
+    NullWritable.get()
+
+  override def generateFileNameForKeyValue(key: Any, value: Any, name: String): String =
+    key.asInstanceOf[String].split("-")(0)
+}
+
 object InventoryModelLoader {
+
+
   def main (args : Array[String]): Unit = {
     if(args.length != 3){
       System.out.println("Invalid Input Parameters")
@@ -27,14 +39,16 @@ object InventoryModelLoader {
       line => map(line)).reduceByKey{
       case(x, y) => reduce(x, y)
     }
-    finalOutput.values.saveAsTextFile(outputDir)
+   // finalOutput.values.saveAsTextFile(outputDir)
+    finalOutput.saveAsHadoopFile(outputDir,classOf[String], classOf[String],
+      classOf[RDDMultipleTextOutputFormat])
   }
 
   def map(line: String):(String, InventoryModel) ={
     val lineArray = line.split(",")
-    (lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 1))
-    (lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 1))
-    (lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(3), lineArray(2), lineArray(4), lineArray(6), 1))
+    ("USER"+"-"+lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 1))
+    ("KIOSK"+"-"+lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 1))
+    ("MATERIAL"+"-"+lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 1))
   }
 
   def reduce(x: InventoryModel,y:InventoryModel):InventoryModel= {
