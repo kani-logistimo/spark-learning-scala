@@ -11,7 +11,7 @@ class InventoryModel(dids :String, mids :String,dates:String, sqs:String,tcs :In
   var tc = tcs
 
   override  def toString(): String ={
-    did+","+id+","+dates+","+sqs+","+tc
+    did+","+ id+","+dates+","+sqs+","+tc
 
   }
 

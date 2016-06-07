@@ -33,6 +33,8 @@ object InventoryModelLoader {
   def map(line: String):(String, InventoryModel) ={
     val lineArray = line.split(",")
     (lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 1))
+    (lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 1))
+    (lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(3), lineArray(2), lineArray(4), lineArray(6), 1))
   }
 
   def reduce(x: InventoryModel,y:InventoryModel):InventoryModel= {
