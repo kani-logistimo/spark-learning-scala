@@ -12,13 +12,13 @@ import org.apache.spark.{SparkContext, SparkConf}
  */
 
 
-class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
+/*class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
     NullWritable.get()
 
   override def generateFileNameForKeyValue(key: Any, value: Any, name: String): String =
     key.asInstanceOf[String]
-}
+}*/
 
 object InventoryTrends {
   def main(args: Array[String]) {
