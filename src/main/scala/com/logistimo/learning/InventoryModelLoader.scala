@@ -17,8 +17,6 @@ class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
 }
 
 object InventoryModelLoader {
-
-
   def main (args : Array[String]): Unit = {
     if(args.length != 3){
       System.out.println("Invalid Input Parameters")
@@ -35,7 +33,7 @@ object InventoryModelLoader {
       .set("spark.executor.memory","10g")
     val sc = new SparkContext(conf)
     val lines = sc.textFile(inputFile)
-    val finalOutput = lines.map(
+    val finalOutput = lines.flatMap(
       line => map(line)).reduceByKey{
       case(x, y) => reduce(x, y)
     }
@@ -44,11 +42,12 @@ object InventoryModelLoader {
       classOf[RDDMultipleTextOutputFormat])
   }
 
-  def map(line: String):(String, InventoryModel) ={
+  def map(line: String):Array[(String, InventoryModel)] ={
     val lineArray = line.split(",")
-    ("USER"+"-"+lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 1))
-    ("KIOSK"+"-"+lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 1))
-    ("MATERIAL"+"-"+lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 1))
+    Array(
+    ("USER"+"-"+lineArray(0) + "-" + lineArray(1) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(1), lineArray(4), lineArray(6), 1)),
+    ("KIOSK"+"-"+lineArray(0) + "-" + lineArray(2) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(2), lineArray(4), lineArray(6), 1)),
+    ("MATERIAL"+"-"+lineArray(0) + "-" + lineArray(3) + "-" + lineArray(4), new InventoryModel(lineArray(0), lineArray(3), lineArray(4), lineArray(6), 1)))
   }
 
   def reduce(x: InventoryModel,y:InventoryModel):InventoryModel= {
